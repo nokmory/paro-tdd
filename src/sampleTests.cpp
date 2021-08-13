@@ -2,7 +2,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-const double PI{std::acos(-1)};
+constexpr double PI{std::acos(-1)};
 
 // basic test
 
@@ -72,24 +72,7 @@ TEST_P(ParametricTests, aTest)
     EXPECT_EQ(params.val % 2, 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(ParametricInstatiation, ParametricTests, ::testing::Values(Params{2}, Params{4}));
-
-// testing exceptions
-class ExampleException : public std::exception
-{
-};
-
-void exceptionalFunc()
-{
-    throw ExampleException();
-}
-
-TEST(ThrowingExceptions, exceptionThrownWhenFunctionExceptionalFuncCalled)
-{
-    EXPECT_THROW(exceptionalFunc(), ExampleException);
-}
-
-// matcher instead of equality
+INSTANTIATE_TEST_CASE_P(ParametricInstatiation, ParametricTests, ::testing::Values(Params{2}, Params{4}));
 
 struct CoordCart
 {
@@ -104,6 +87,24 @@ struct CoordEuler
     double phi;
     double xsi;
 };
+
+struct Coords6D
+{
+    CoordCart location;
+    CoordEuler orientation;
+};
+
+TEST(ComplicatedTest, checkXAndYEqual0)
+{
+    Coords6D coords{{0, 0, 35}, {0, PI, PI / 4}};
+
+    EXPECT_THAT(
+        coords,
+        testing::Field(
+            "location",
+            &Coords6D::location,
+            testing::AllOf(testing::Field("X", &CoordCart::x, 0), testing::Field("Y", &CoordCart::y, 0))));
+}
 
 struct Coords6D
 {
