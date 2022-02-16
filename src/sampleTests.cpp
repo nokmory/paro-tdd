@@ -74,6 +74,8 @@ TEST_P(ParametricTests, aTest)
 
 INSTANTIATE_TEST_CASE_P(ParametricInstatiation, ParametricTests, ::testing::Values(Params{2}, Params{4}));
 
+// matcher instead of equality
+
 struct CoordCart
 {
     double x;
